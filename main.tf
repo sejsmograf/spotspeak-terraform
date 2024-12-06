@@ -213,7 +213,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 resource "aws_key_pair" "ec2_key" {
   key_name = "spotspeak-key"
 
-  public_key = file("/home/tomek/.ssh/ec2-spotspeak.pub")
+  public_key = file(var.ec2_key_path)
 }
 
 resource "aws_iam_role" "ec2_role" {

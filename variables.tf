@@ -64,3 +64,8 @@ variable "db_password" {
   type      = string
   sensitive = true
 }
+
+variable "ec2_key_path" {
+  type      = string
+  sensitive = true
+}
