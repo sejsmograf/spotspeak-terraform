@@ -118,7 +118,7 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 resource "aws_db_instance" "db" {
   allocated_storage = 10
   engine            = "postgres"
-  instance_class    = "db.m5d.large"
+  instance_class    = "db.t3.micro"
 
 
   username = var.db_username
@@ -131,7 +131,7 @@ resource "aws_db_instance" "db" {
 }
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = var.bucket_name
+  bucket        = var.bucket_name
   force_destroy = true
 }
 
@@ -217,7 +217,7 @@ resource "aws_key_pair" "ec2_key" {
 }
 
 resource "aws_iam_role" "ec2_role" {
-  name               = "ec2_s3_full_access_role"
+  name = "ec2_s3_full_access_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -235,12 +235,12 @@ resource "aws_iam_role" "ec2_role" {
 resource "aws_iam_policy" "s3_full_access" {
   name        = "S3FullAccessPolicy"
   description = "Policy that allows full access to a specific S3 bucket"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action   = "s3:*"
-        Effect   = "Allow"
+        Action = "s3:*"
+        Effect = "Allow"
         Resource = [
           "${aws_s3_bucket.bucket.arn}",
           "${aws_s3_bucket.bucket.arn}/*",
@@ -257,10 +257,10 @@ resource "aws_iam_role_policy_attachment" "ec2_s3_full_access" {
 
 
 resource "aws_instance" "server" {
-  count = 1
-  ami = var.ami
+  count         = 1
+  ami           = var.ami
   instance_type = var.instance_type
-  subnet_id = aws_subnet.public_subnet[count.index].id
+  subnet_id     = aws_subnet.public_subnet[count.index].id
 
   key_name = aws_key_pair.ec2_key.key_name
 
@@ -279,7 +279,7 @@ resource "aws_eip" "eip" {
   count = 1
 
   instance = aws_instance.server[count.index].id
-  vpc = true
+  vpc      = true
 }
 
 
