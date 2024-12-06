@@ -14,7 +14,7 @@ variable "ami" {
 
 variable "instance_type" {
   type    = string
-  default = "t3a.micro"
+  default = "t2.small"
 }
 
 

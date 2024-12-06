@@ -266,13 +266,50 @@ resource "aws_instance" "server" {
 
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
-  user_data = <<-EOF
+  user_data                   = <<-EOF
               #!/bin/bash
               apt-get update -y
               apt-get install -y git
-              apt-get install -y postgresql
-              apt-get install -y default-jdk
+              apt-get install -y postgresql 
+              apt-get install -y ca-certificates curl
+
+              install -m 0755 -d /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+              chmod a+r /etc/apt/keyrings/docker.asc
+
+              # Add the repository to Apt sources:
+              echo \
+                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+                $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+                tee /etc/apt/sources.list.d/docker.list > /dev/null
+              apt-get update -y
+
+              apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              
+              systemctl enable docker
+              systemctl start docker
+              echo "export ENV_SPRING_DATASOURCE_URL=jdbc:postgresql://${aws_db_instance.db.address}/postgres" >> /home/ubuntu/.bashrc
+              echo "export ENV_SPRING_DATASOURCE_USERNAME=${var.db_username}" >> /home/ubuntu/.bashrc
+              echo "export ENV_SPRING_DATASOURCE_PASSWORD=${var.db_password}" >> /home/ubuntu/.bashrc
+              echo "export KEYCLOAK_CLIENT_ID=" >> /home/ubuntu/.bashrc
+              echo "export KEYCLOAK_CLIENT_SECRET=" >> /home/ubuntu/.bashrc
+              echo "export AWS_S3_BUCKET_NAME=${aws_s3_bucket.bucket.bucket}" >> /home/ubuntu/.bashrc
+              echo "export AWS_CLOUDFRONT_URL=${aws_cloudfront_distribution.cdn.domain_name}" >> /home/ubuntu/.bashrc
+              echo "export GROQ_API_KEY=" >> /home/ubuntu/.bashrc
+              echo "export GROQ_BASE_URL=" >> /home/ubuntu/.bashrc
+              echo "export GROQ_CHAT_MODEL=" >> /home/ubuntu/.bashrc
+              echo "export SERVER_PORT=80" >> /home/ubuntu/.bashrc
+              echo "export EC2_ENV=true" >> /home/ubuntu/.bashrc
+
+              usermod -aG docker ubuntu
+              sudo systemctl restart docker
+              newgrp docker
+
+              apt install -y nginx certbot python3-certbot-nginx
+              
+              su - ubuntu -c "git clone https://github.com/sejsmograf/spotspeak /home/ubuntu/spotspeak"
               EOF
+  user_data_replace_on_change = true
 }
 
 resource "aws_eip" "eip" {
