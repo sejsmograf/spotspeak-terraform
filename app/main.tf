@@ -6,6 +6,15 @@ terraform {
     }
   }
 
+  backend "s3" {
+    # Set your
+    # bucket = "your-bucket-name"
+    # key    = "path/to/your/key"
+    # region = "us-west-2"
+    # You can also set the profile in seperate file and use it with
+    # terraform init -backend-config=your-config-file
+  }
+
   required_version = ">= 1.2.0"
 }
 
@@ -250,6 +259,11 @@ resource "aws_iam_policy" "s3_full_access" {
   })
 }
 
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "ec2_instance_profile"
+  role = aws_iam_role.ec2_role.name
+}
+
 resource "aws_iam_role_policy_attachment" "ec2_s3_full_access" {
   policy_arn = aws_iam_policy.s3_full_access.arn
   role       = aws_iam_role.ec2_role.name
@@ -257,10 +271,11 @@ resource "aws_iam_role_policy_attachment" "ec2_s3_full_access" {
 
 
 resource "aws_instance" "server" {
-  count         = 1
-  ami           = var.ami
-  instance_type = var.instance_type
-  subnet_id     = aws_subnet.public_subnet[count.index].id
+  count                = 1
+  ami                  = var.ami
+  instance_type        = var.instance_type
+  subnet_id            = aws_subnet.public_subnet[count.index].id
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
   key_name = aws_key_pair.ec2_key.key_name
 
