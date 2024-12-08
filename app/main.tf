@@ -7,11 +7,11 @@ terraform {
   }
 
   backend "s3" {
-    # Set your
+    # Set
     # bucket = "your-bucket-name"
     # key    = "path/to/your/key"
     # region = "us-west-2"
-    # You can also set the profile in seperate file and use it with
+    # You can also set the profile in separate file and use it with
     # terraform init -backend-config=your-config-file
   }
 
@@ -90,6 +90,13 @@ resource "aws_security_group" "web_sg" {
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -280,6 +287,10 @@ resource "aws_instance" "server" {
   key_name = aws_key_pair.ec2_key.key_name
 
   vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  root_block_device {
+    volume_size = 30
+  }
 
   user_data                   = <<-EOF
               #!/bin/bash
