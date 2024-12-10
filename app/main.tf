@@ -320,7 +320,7 @@ resource "aws_instance" "server" {
               echo "export KEYCLOAK_CLIENT_ID=" >> /home/ubuntu/.bashrc
               echo "export KEYCLOAK_CLIENT_SECRET=" >> /home/ubuntu/.bashrc
               echo "export AWS_S3_BUCKET_NAME=${aws_s3_bucket.bucket.bucket}" >> /home/ubuntu/.bashrc
-              echo "export AWS_CLOUDFRONT_URL=${aws_cloudfront_distribution.cdn.domain_name}" >> /home/ubuntu/.bashrc
+              echo "export AWS_CLOUDFRONT_URL=https://${aws_cloudfront_distribution.cdn.domain_name}" >> /home/ubuntu/.bashrc
               echo "export GROQ_API_KEY=" >> /home/ubuntu/.bashrc
               echo "export GROQ_BASE_URL=" >> /home/ubuntu/.bashrc
               echo "export GROQ_CHAT_MODEL=" >> /home/ubuntu/.bashrc
