@@ -69,3 +69,24 @@ variable "ec2_key_path" {
   type      = string
   sensitive = true
 }
+
+variable "groq_api_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "groq_base_url" {
+  type      = string
+  sensitive = true
+}
+
+variable "groq_chat_model" {
+  type      = string
+  sensitive = true
+}
+
+variable "keycloak_client_secret" {
+  type      = string
+  sensitive = true
+}
+

@@ -317,13 +317,13 @@ resource "aws_instance" "server" {
               echo "export ENV_SPRING_DATASOURCE_URL=jdbc:postgresql://${aws_db_instance.db.address}/postgres" >> /home/ubuntu/.bashrc
               echo "export ENV_SPRING_DATASOURCE_USERNAME=${var.db_username}" >> /home/ubuntu/.bashrc
               echo "export ENV_SPRING_DATASOURCE_PASSWORD=${var.db_password}" >> /home/ubuntu/.bashrc
-              echo "export KEYCLOAK_CLIENT_ID=" >> /home/ubuntu/.bashrc
-              echo "export KEYCLOAK_CLIENT_SECRET=" >> /home/ubuntu/.bashrc
+              echo "export KEYCLOAK_CLIENT_ID=spring-backend" >> /home/ubuntu/.bashrc
+              echo "export KEYCLOAK_CLIENT_SECRET=${var.keycloak_client_secret}" >> /home/ubuntu/.bashrc
               echo "export AWS_S3_BUCKET_NAME=${aws_s3_bucket.bucket.bucket}" >> /home/ubuntu/.bashrc
               echo "export AWS_CLOUDFRONT_URL=https://${aws_cloudfront_distribution.cdn.domain_name}" >> /home/ubuntu/.bashrc
-              echo "export GROQ_API_KEY=" >> /home/ubuntu/.bashrc
-              echo "export GROQ_BASE_URL=" >> /home/ubuntu/.bashrc
-              echo "export GROQ_CHAT_MODEL=" >> /home/ubuntu/.bashrc
+              echo "export GROQ_API_KEY=${var.groq_api_key}" >> /home/ubuntu/.bashrc
+              echo "export GROQ_BASE_URL=${var.groq_base_url}" >> /home/ubuntu/.bashrc
+              echo "export GROQ_CHAT_MODEL=${var.groq_chat_model}" >> /home/ubuntu/.bashrc
               echo "export SERVER_PORT=80" >> /home/ubuntu/.bashrc
               echo "export EC2_ENV=true" >> /home/ubuntu/.bashrc
 
@@ -332,7 +332,6 @@ resource "aws_instance" "server" {
               newgrp docker
 
               apt install -y nginx certbot python3-certbot-nginx
-              
               su - ubuntu -c "git clone https://github.com/sejsmograf/spotspeak /home/ubuntu/spotspeak"
               EOF
   user_data_replace_on_change = true
